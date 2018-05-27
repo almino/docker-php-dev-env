@@ -1,7 +1,7 @@
 FROM ubuntu:14.04
 
 RUN apt-get update
-RUN apt-get -y --force-yes install apache2 php5 php5-xdebug multitail
+RUN apt-get -y --force-yes install apache2 php5 php5-xdebug
 
 # https://github.com/docker-library/php/blob/78125d0d3c32a87a05f56c12ca45778e3d4bb7c9/5.6/stretch/apache/Dockerfile#L48
 ENV APACHE_CONFDIR /etc/apache2
@@ -50,14 +50,16 @@ xdebug.remote_enable = 1 \
 xdebug.remote_port = 9000 \ 
 EOF
 
+# We don't want xdeub on cli
 RUN rm /etc/php5/cli/conf.d/20-xdebug.ini
 
 RUN echo "<?php phpinfo();" > /var/www/html/index.php
 
 EXPOSE 80 9000
 
-# RUN service apache2 start
-
 ENTRYPOINT ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
 
-# CMD [ "multitail", "/var/log/apache2/access.log", "-I", "/var/log/apache2/error.log" ]
+# docker build -t ${PWD##*/} .
+# docker container rm -f hostgator-php; \
+## docker container create -p 8080:80 --name hostgator-php php-dev-env && \
+## docker start hostgator-php
